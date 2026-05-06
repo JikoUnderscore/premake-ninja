@@ -392,10 +392,17 @@ local function c_cpp_compilation_rules(cfg, toolset, pch)
 		return p.workspace.getrelative(cfg.workspace, value)
 	end
 
+    local project_getrelative = p.project.getrelative
+	p.project.getrelative = function(prj, value)
+		return p.workspace.getrelative(prj.workspace, value)
+	end
+
 	local all_cflags = getcflags(toolset, cfg, cfg)
 	local all_cxxflags = getcxxflags(toolset, cfg, cfg)
 	local all_ldflags = getldflags(toolset, cfg)
 	local all_resflags = getresflags(toolset, cfg, cfg)
+
+    p.project.getrelative = project_getrelative
 
 	if toolset == p.tools.msc then
 		ninja.emit_flags('CFLAGS', all_cflags)
